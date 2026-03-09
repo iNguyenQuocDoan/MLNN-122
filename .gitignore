@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+build/
+.next/
+out/
+coverage/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Cache
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+
+# Temp
+tmp/
+temp/
+*.tmp
+
+# Media / archives
+*.zip
+*.rar
+*.7z
+*.mp4
+*.mov
+*.avi
+*.psd
+
+# Docs
+*.md
+
+# Keep only if needed
+#!README.md
