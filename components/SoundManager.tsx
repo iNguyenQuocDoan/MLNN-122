@@ -107,7 +107,10 @@ export default function SoundManager({ gameStarted }: SoundManagerProps) {
             background: 'linear-gradient(135deg, rgba(17, 29, 53, 0.95), rgba(26, 10, 46, 0.95))',
             border: '1px solid rgba(245,197,24,0.2)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+            WebkitBackdropFilter: 'blur(20px)',
             backdropFilter: 'blur(20px)',
+            position: 'relative',
+            zIndex: 60,
           }}
         >
           {/* Header */}
@@ -116,6 +119,7 @@ export default function SoundManager({ gameStarted }: SoundManagerProps) {
               Âm thanh
             </span>
             <button
+              type="button"
               onClick={() => setShowControls(false)}
               className="text-slate-500 hover:text-white text-sm"
             >
@@ -125,6 +129,7 @@ export default function SoundManager({ gameStarted }: SoundManagerProps) {
 
           {/* Play/Pause button */}
           <button
+            type="button"
             onClick={togglePlay}
             className="w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
             style={{
@@ -147,6 +152,7 @@ export default function SoundManager({ gameStarted }: SoundManagerProps) {
             </div>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={toggleMute}
                 className="text-lg hover:scale-110 transition-transform"
               >
@@ -154,6 +160,7 @@ export default function SoundManager({ gameStarted }: SoundManagerProps) {
               </button>
               <input
                 type="range"
+                title="Âm lượng"
                 min="0"
                 max="1"
                 step="0.05"

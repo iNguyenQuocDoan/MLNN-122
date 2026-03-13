@@ -33,45 +33,48 @@ export default function GameSetup({ onStart, hasSavedGame, onContinue }: GameSet
             key={i}
             className="particle"
             style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 8}s`,
-              animationDuration: `${6 + Math.random() * 4}s`,
+              left: `${(i * 7.3) % 100}%`,
+              animationDelay: `${(i * 0.53) % 8}s`,
+              animationDuration: `${6 + (i * 0.4) % 4}s`,
             }}
           />
         ))}
       </div>
 
-      <div className={`w-full max-w-md transition-all duration-500 ${isStarting ? 'scale-95 opacity-0' : ''}`}>
+      <div className={`w-full max-w-lg transition-all duration-500 ${isStarting ? 'scale-95 opacity-0' : ''}`}>
         {/* Logo Section */}
         <div className="text-center mb-8">
-          {/* Animated treasure chest */}
           <div className="relative inline-block">
-            <div className="text-8xl anim-float drop-shadow-2xl">🏴‍☠️</div>
-            {/* Glow effect behind */}
+            <div className="text-8xl anim-float-big drop-shadow-2xl">🏴‍☠️</div>
             <div
-              className="absolute inset-0 blur-3xl opacity-40"
+              className="absolute inset-0 blur-3xl opacity-50"
               style={{ background: 'radial-gradient(circle, #F5C518 0%, transparent 70%)' }}
+            />
+            {/* Orbit ring */}
+            <div
+              className="absolute inset-[-16px] rounded-full border-2 border-dashed border-yellow-400/30 animate-spin"
+              style={{ animationDuration: '12s' }}
             />
           </div>
 
-          {/* Title with gradient and glow */}
           <h1
-            className="text-4xl md:text-5xl font-black tracking-tight mt-4 neon-gold"
+            className="text-4xl md:text-5xl font-black tracking-tight mt-5 neon-gold"
             style={{
               background: 'linear-gradient(135deg, #F5C518 0%, #F97316 50%, #EF4444 100%)',
-              backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
               color: 'transparent',
             }}
           >
             Truy Tìm Kho Báu
           </h1>
-
-          {/* Subtitle */}
-          <p className="text-slate-400 mt-3 text-sm flex items-center justify-center gap-2">
-            <span className="w-8 h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
+          <p className="text-slate-300 mt-2 text-base font-semibold">
+            🗺️ Kinh tế chính trị · Mác – Lênin · 4.0
+          </p>
+          <p className="text-slate-500 mt-2 text-sm flex items-center justify-center gap-2">
+            <span className="w-10 h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
             Mở ô bí ẩn · Trả lời câu hỏi · Giành kho báu!
-            <span className="w-8 h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
+            <span className="w-10 h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
           </p>
         </div>
 
@@ -80,20 +83,20 @@ export default function GameSetup({ onStart, hasSavedGame, onContinue }: GameSet
           {/* Player count selector */}
           <div>
             <label className="flex items-center gap-2 text-yellow-400 font-bold text-sm mb-4 uppercase tracking-wider">
-              <span className="w-6 h-6 rounded-full bg-yellow-400/20 flex items-center justify-center text-xs">
+              <span className="w-7 h-7 rounded-full bg-yellow-400/20 border border-yellow-400/30 flex items-center justify-center text-sm">
                 👥
               </span>
               Số người chơi
             </label>
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-5 gap-2">
               {[2, 3, 4, 5, 6].map((n) => (
                 <button
                   key={n}
                   onClick={() => setCount(n)}
                   className={`
-                    relative py-4 rounded-2xl font-black text-xl border-2 transition-all duration-300
+                    relative py-3.5 rounded-2xl font-black text-xl border-2 transition-all duration-300
                     ${count === n
-                      ? 'border-yellow-400 text-black scale-110 glow-gold'
+                      ? 'border-yellow-400 text-black scale-[1.08] glow-gold'
                       : 'border-white/15 bg-white/5 text-white hover:border-yellow-400/50 hover:bg-yellow-400/10 hover:scale-105'
                     }
                   `}
@@ -105,7 +108,12 @@ export default function GameSetup({ onStart, hasSavedGame, onContinue }: GameSet
                 >
                   {n}
                   {count === n && (
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-[#0A1628]" />
+                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-green-400 rounded-full border-2 border-[#0A1628]" />
+                  )}
+                  {count === n && (
+                    <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-yellow-400 font-bold">
+                      {n === 2 ? 'Đôi' : n === 3 ? 'Tam' : n === 4 ? 'Tứ' : n === 5 ? 'Ngũ' : 'Lục'}
+                    </span>
                   )}
                 </button>
               ))}
@@ -113,24 +121,20 @@ export default function GameSetup({ onStart, hasSavedGame, onContinue }: GameSet
           </div>
 
           {/* Divider */}
-          <div className="flex items-center gap-4">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-            <span className="text-xs text-slate-500 uppercase tracking-widest">Nhập tên</span>
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          </div>
+          <div className="divider-label mt-2">Nhập tên người chơi</div>
 
           {/* Name inputs */}
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {Array.from({ length: count }).map((_, i) => (
               <div
                 key={i}
                 className="flex items-center gap-3 anim-slide-right"
-                style={{ animationDelay: `${i * 0.08}s` }}
+                style={{ animationDelay: `${i * 0.07}s` }}
               >
-                {/* Avatar with glow */}
-                <div className="relative">
+                {/* Avatar */}
+                <div className="relative shrink-0">
                   <div
-                    className="w-11 h-11 rounded-full flex items-center justify-center text-xl border-2 shadow-lg transition-transform hover:scale-110"
+                    className="w-11 h-11 rounded-xl flex items-center justify-center text-xl border-2 shadow-lg transition-transform hover:scale-110"
                     style={{
                       background: `linear-gradient(135deg, ${PLAYER_CONFIGS[i].color}dd, ${PLAYER_CONFIGS[i].color}88)`,
                       borderColor: 'rgba(255,255,255,0.3)',
@@ -139,7 +143,6 @@ export default function GameSetup({ onStart, hasSavedGame, onContinue }: GameSet
                   >
                     {PLAYER_CONFIGS[i].avatar}
                   </div>
-                  {/* Player number badge */}
                   <span
                     className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black border-2 border-[#0A1628]"
                     style={{ background: PLAYER_CONFIGS[i].color }}
@@ -162,9 +165,8 @@ export default function GameSetup({ onStart, hasSavedGame, onContinue }: GameSet
                     maxLength={20}
                     className="w-full bg-white/5 border-2 border-white/15 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm font-medium outline-none transition-all duration-300 focus:border-yellow-400/60 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(245,197,24,0.15)] group-hover:border-white/25"
                   />
-                  {/* Active indicator */}
                   {names[i] && (
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-400 text-sm">
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-400 text-base">
                       ✓
                     </span>
                   )}
@@ -173,7 +175,7 @@ export default function GameSetup({ onStart, hasSavedGame, onContinue }: GameSet
             ))}
           </div>
 
-          {/* Continue button (if saved game exists) */}
+          {/* Continue button */}
           {hasSavedGame && onContinue && (
             <button
               onClick={onContinue}
@@ -202,44 +204,51 @@ export default function GameSetup({ onStart, hasSavedGame, onContinue }: GameSet
             </span>
           </button>
 
-          {/* Rules hint */}
-          <div className="text-xs text-slate-500 text-center leading-relaxed px-4">
-            <span className="text-yellow-400/60">Tip:</span> Chọn ô bí ẩn → Trả lời câu hỏi hoặc nhận quà → Tiến tới kho báu trước!
-          </div>
+          <p className="text-xs text-slate-500 text-center leading-relaxed">
+            <span className="text-yellow-400/70">💡 Tip:</span> Chọn ô → Trả lời câu hỏi hoặc nhận quà → Đến kho báu trước!
+          </p>
         </div>
 
-        {/* Game features */}
-        <div className="grid grid-cols-4 gap-3 mt-6">
+        {/* Game features — 8 items 4×2 */}
+        <div className="grid grid-cols-4 gap-2.5 mt-5">
           {[
-            { icon: '❓', label: '20 câu hỏi', color: '#3B82F6' },
-            { icon: '🎁', label: '10 ô quà', color: '#F5C518' },
+            { icon: '❓', label: '30 câu hỏi', color: '#3B82F6' },
+            { icon: '🎁', label: '15 ô quà', color: '#F5C518' },
             { icon: '🛡️', label: 'Lá chắn', color: '#22C55E' },
             { icon: '❄️', label: 'Đóng băng', color: '#67E8F9' },
+            { icon: '🔄', label: 'Đổi vị trí', color: '#A855F7' },
+            { icon: '✨', label: 'Nhân đôi', color: '#F59E0B' },
+            { icon: '🎯', label: 'Thêm lượt', color: '#10B981' },
+            { icon: '🏆', label: '30 bước đua', color: '#EF4444' },
           ].map((f, i) => (
             <div
               key={f.icon}
               className="glass-card rounded-2xl p-3 text-center transition-all duration-300 hover:scale-105 hover:-translate-y-1 anim-slide-up"
               style={{
-                animationDelay: `${0.4 + i * 0.1}s`,
+                animationDelay: `${0.3 + i * 0.07}s`,
                 borderColor: `${f.color}30`,
               }}
             >
               <div
-                className="text-2xl mb-1 drop-shadow-lg"
+                className="text-xl mb-1 drop-shadow-lg"
                 style={{ filter: `drop-shadow(0 0 8px ${f.color}60)` }}
               >
                 {f.icon}
               </div>
-              <div className="text-[10px] font-bold text-slate-400">{f.label}</div>
+              <div className="text-[9px] font-bold text-slate-400 leading-tight">{f.label}</div>
             </div>
           ))}
         </div>
 
-        {/* Version badge */}
-        <div className="text-center mt-6">
+        {/* Footer */}
+        <div className="text-center mt-5 flex items-center justify-center gap-3">
           <span className="badge badge-gold">
             <span>✨</span>
             <span>Version 2.0</span>
+          </span>
+          <span className="badge badge-blue">
+            <span>📚</span>
+            <span>MLN122</span>
           </span>
         </div>
       </div>

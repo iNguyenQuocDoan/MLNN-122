@@ -13,33 +13,45 @@ export default function TileGrid({ tiles, canSelect, onSelect, revealingId }: Ti
   const revealedCount = tiles.filter(t => t.revealed).length
   const totalTiles = tiles.length
 
+  const questionLeft = tiles.filter(t => !t.revealed && t.type === 'question').length
+  const giftLeft = tiles.filter(t => !t.revealed && t.type === 'gift').length
+  const progressPct = (revealedCount / totalTiles) * 100
+
   return (
     <div className={`glass-card rounded-2xl p-4 transition-all duration-300 h-full flex flex-col ${!canSelect ? 'opacity-85' : ''}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-3 shrink-0">
         <div className="flex items-center gap-2">
           <span className="text-xl">🗺️</span>
-          <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">
+          <span className="text-sm font-bold text-yellow-400 uppercase tracking-wider neon-gold" style={{ textShadow: 'none', fontSize: '13px' }}>
             Bản đồ kho báu
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="badge badge-gold text-xs">
-            <span>📦</span>
-            <span>{totalTiles - revealedCount} ô còn lại</span>
-          </span>
+        <div className="flex items-center gap-2">
+          <span className="tile-count-q">❓ {questionLeft}</span>
+          <span className="tile-count-g">🎁 {giftLeft}</span>
         </div>
       </div>
 
-      {/* Progress bar */}
-      <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-4 shrink-0">
-        <div
-          className="h-full rounded-full transition-all duration-500"
-          style={{
-            width: `${(revealedCount / totalTiles) * 100}%`,
-            background: 'linear-gradient(90deg, #F5C518, #F97316)',
-          }}
-        />
+      {/* Progress bar with label */}
+      <div className="mb-4 shrink-0">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Tiến trình khám phá</span>
+          <span className="text-[10px] font-black text-yellow-400">{revealedCount}/{totalTiles}</span>
+        </div>
+        <div className="h-2.5 bg-white/10 rounded-full overflow-hidden relative">
+          <div
+            className="h-full rounded-full transition-all duration-700 relative"
+            style={{
+              width: `${progressPct}%`,
+              background: 'linear-gradient(90deg, #F5C518, #F97316, #EF4444)',
+            }}
+          >
+            {progressPct > 5 && (
+              <div className="absolute inset-0 rounded-full" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%)', animation: 'shimmerSweep 2s ease-in-out infinite' }} />
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Tile grid - larger tiles with responsive columns */}
