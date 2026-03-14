@@ -83,65 +83,340 @@ body {
   100% { transform: translateY(0) scale(0); opacity: 0; }
 }
 
-/* ─── Tile Flip 3D Enhanced ─── */
-.tile-wrapper {
-  perspective: 1000px;
+/* ─── Tile Card (no 3D — eliminates GPU compositing artifact) ─── */
+
+/* Wrapper: aspect-ratio container + stacking context */
+.tc-wrap {
   position: relative;
+  isolation: isolate;
+  cursor: default;
 }
 
-.tile-inner {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.tile-inner.flipped { transform: rotateY(180deg); }
-
-.tile-face {
+/* Both faces stacked absolutely inside wrapper */
+.tc-face {
   position: absolute;
   inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  /* NO overflow:hidden  — was the GPU compositing trigger   */
+  /* NO backface-visibility — no longer needed               */
+  /* NO preserve-3d         — root cause of the paint drops  */
 }
 
-.tile-back-face { transform: rotateY(180deg); }
+/* ── Front face ── */
+.tc-front {
+  z-index: 2;
+  border: 2px solid #2e1c0c;
+  background: linear-gradient(145deg, #1e1108 0%, #2a1a0c 60%, #150d05 100%);
+  transition: opacity 0.18s ease, transform 0.18s ease,
+              box-shadow 0.18s ease, border-color 0.18s ease;
+}
 
-/* Tile front enhanced bevel highlight */
-.tile-front-face::before {
-  content: '';
+.tc-front--active {
+  border-color: #c4922a;
+  background: linear-gradient(145deg, #7c4f1a 0%, #a3682e 35%, #6b4018 65%, #4e2e0e 100%);
+  box-shadow:
+    inset 0 2px 6px rgba(255,255,255,0.12),
+    0 4px 16px rgba(0,0,0,0.4),
+    0 0 0 rgba(196,146,42,0);
+  cursor: pointer;
+}
+
+.tc-front--active:hover {
+  border-color: #f0c050;
+  box-shadow:
+    inset 0 2px 6px rgba(255,255,255,0.15),
+    0 4px 20px rgba(0,0,0,0.45),
+    0 0 18px rgba(196,146,42,0.55),
+    0 0 36px rgba(196,146,42,0.2);
+  transform: scale(1.07);
+}
+
+.tc-front--active:active {
+  transform: scale(0.96);
+}
+
+.tc-front--locked {
+  border-color: #2e1c0c;
+  background: linear-gradient(145deg, #1a0f07 0%, #231508 60%, #120b04 100%);
+  opacity: 0.5;
+}
+
+/* Hide front when revealed */
+.tc-front--hidden {
+  opacity: 0;
+  transform: scale(0.82);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Back face ── */
+.tc-back {
+  z-index: 1;
+  opacity: 0;
+  transform: scale(0.82);
+  pointer-events: none;
+  border: 2px solid transparent;
+  transition: opacity 0.22s ease 0.12s, transform 0.22s ease 0.12s;
+}
+
+.tc-back--visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.tc-back--question {
+  background: linear-gradient(145deg, #0f2060 0%, #1a3aaa 55%, #0d1f5a 100%);
+  border-color: rgba(96,140,240,0.7);
+  box-shadow: 0 4px 20px rgba(59,100,246,0.25), inset 0 1px 3px rgba(255,255,255,0.08);
+}
+
+.tc-back--gift {
+  background: linear-gradient(145deg, #6b2d08 0%, #c46010 55%, #8a3e08 100%);
+  border-color: rgba(240,160,32,0.7);
+  box-shadow: 0 4px 20px rgba(200,130,40,0.25), inset 0 1px 3px rgba(255,255,255,0.08);
+}
+
+/* ── Icon box & icon ── */
+.tc-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tc-icon {
+  font-size: 20px;
+  line-height: 1;
+  display: block;
+  user-select: none;
+}
+
+@media (min-width: 1280px) {
+  .tc-icon { font-size: 24px; }
+}
+
+@media (min-width: 1536px) {
+  .tc-icon { font-size: 28px; }
+}
+
+.tc-front--active .tc-icon {
+  filter: drop-shadow(0 0 8px rgba(245,197,24,0.55));
+}
+
+.tc-back--question .tc-icon {
+  filter: drop-shadow(0 0 10px rgba(100,150,255,0.7));
+}
+
+.tc-back--gift .tc-icon {
+  filter: drop-shadow(0 0 10px rgba(245,160,40,0.75));
+}
+
+/* ── Number (front) & type label (back) ── */
+.tc-num {
+  font-size: 10px;
+  font-weight: 900;
+  margin-top: 3px;
+  line-height: 1;
+  user-select: none;
+  color: rgba(255,210,80,0.2);
+}
+
+.tc-front--active .tc-num  { color: rgba(255,210,80,0.75); }
+.tc-front--locked .tc-num  { color: rgba(255,210,80,0.15); }
+
+.tc-type-label {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+  line-height: 1;
+  user-select: none;
+}
+
+.tc-back--question .tc-type-label { color: #93c5fd; }
+.tc-back--gift     .tc-type-label { color: #fcd34d; }
+
+/* ── Decorative overlays (absolute — don't affect flow) ── */
+.tc-bevel {
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 50%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%);
+  height: 45%;
   border-radius: 12px 12px 0 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.13) 0%, transparent 100%);
   pointer-events: none;
 }
 
-/* Enhanced shimmer effect */
-.tile-shimmer::after {
-  content: '';
+.tc-shimmer {
   position: absolute;
   inset: 0;
+  border-radius: 12px;
   background: linear-gradient(
     105deg,
     transparent 20%,
-    rgba(255,255,255,0.1) 35%,
-    rgba(255,255,255,0.2) 50%,
-    rgba(255,255,255,0.1) 65%,
+    rgba(255,255,255,0.07) 35%,
+    rgba(255,255,255,0.13) 50%,
+    rgba(255,255,255,0.07) 65%,
     transparent 80%
   );
   background-size: 200% 100%;
-  animation: shimmerSweep 2s ease-in-out infinite;
-  border-radius: 12px;
+  animation: shimmerSweep 2.5s ease-in-out infinite;
   pointer-events: none;
+}
+
+.tc-lock {
+  position: absolute;
+  bottom: 3px;
+  right: 4px;
+  font-size: 8px;
+  opacity: 0.4;
+  user-select: none;
+  line-height: 1;
+}
+
+/* ── Reveal burst ── */
+.tc-burst {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.tc-burst-pulse {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(245,197,24,0.55) 0%, rgba(245,197,24,0.15) 50%, transparent 70%);
+  animation: pulse 0.6s ease-in-out infinite;
+}
+
+.tc-burst-ring {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.18);
+  animation: ping 0.8s ease-out infinite;
+}
+
+/* ─── TileGrid layout ─── */
+
+.tg-root {
+  padding: 14px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: opacity 0.3s;
+}
+
+.tg-root--locked { opacity: 0.82; }
+
+.tg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.tg-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #f5c518;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0;
+}
+
+.tg-progress {
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.tg-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.tg-progress-label {
+  font-size: 10px;
+  color: #475569;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tg-progress-count {
+  font-size: 10px;
+  font-weight: 900;
+  color: #f5c518;
+}
+
+.tg-progress-track {
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.tg-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f5c518, #f97316, #ef4444);
+  transition: width 0.7s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tg-progress-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
+  animation: shimmerSweep 2s ease-in-out infinite;
+}
+
+.tg-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.tg-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 1280px) {
+  .tg-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
+.tg-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+.tg-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #475569;
+  user-select: none;
 }
 
 /* ─── Glow effects ─── */
@@ -771,3 +1046,328 @@ body {
 }
 
 .fade-in-up { animation: fadeInUp 0.4s ease forwards; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TILE CARD SYSTEM  (tc- prefix)
+   Root cause fix: overlays are child divs with explicit z-index instead of
+   ::before/::after pseudo-elements, so they NEVER cover the icon.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Wrapper ──────────────────────────────────────────────────────────── */
+.tc-wrap {
+  perspective: 1000px;
+  position: relative;
+  transform: translateZ(0);
+}
+
+/* ── Inner flip container (preserve-3d) ──────────────────────────────── */
+.tc-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.tc-inner--flipped {
+  transform: rotateY(180deg);
+}
+
+/* ── Both faces share these base rules ───────────────────────────────── */
+.tc-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* FIX: overflow:visible so emoji are NEVER clipped by the box boundary */
+  overflow: visible;
+  /* FIX: translateZ(2px) forces correct layer ordering on Chrome/Windows,
+     preventing the blank-face rendering bug with backface-visibility */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+/* ── Front face (unrevealed) ──────────────────────────────────────────── */
+.tc-front {
+  border: 2px solid #3a2510;
+  transform: rotateY(0deg) translateZ(2px);
+  background: linear-gradient(145deg, #3D2413 0%, #4B3520 50%, #2A1A0C 100%);
+}
+
+.tc-front--active {
+  border-color: #B8860B;
+  background: linear-gradient(145deg, #6D4423 0%, #8B5A2B 30%, #5C3A1E 70%, #4A2C10 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,0.15),
+    0 4px 14px rgba(0,0,0,0.35);
+  cursor: pointer;
+}
+
+.tc-front--active:hover {
+  border-color: #F5C518;
+  transform: rotateY(0deg) translateZ(2px) scale(1.09);
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,0.2),
+    0 0 24px rgba(245,197,24,0.5),
+    0 6px 18px rgba(0,0,0,0.4);
+}
+
+.tc-front--active:active {
+  transform: rotateY(0deg) translateZ(2px) scale(0.94);
+}
+
+.tc-front--locked {
+  border-color: #2a1508;
+  opacity: 0.42;
+  filter: saturate(0.35);
+}
+
+/* ── Bevel highlight (child div, z-index 1 — safe, below icon) ───────── */
+.tc-bevel {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 48%;
+  border-radius: 10px 10px 0 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Shimmer sweep (child div, z-index 2 — below icon at z-index 10) ─── */
+.tc-shimmer {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255,255,255,0.07) 35%,
+    rgba(255,255,255,0.16) 50%,
+    rgba(255,255,255,0.07) 65%,
+    transparent 80%
+  );
+  background-size: 200% 100%;
+  animation: shimmerSweep 2.2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ── Icon box — ALWAYS on top (z-index 10) ────────────────────────────── */
+.tc-icon-box {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5em;
+  min-height: 1.5em;
+}
+
+.tc-icon {
+  /* clamp: never smaller than 18px, scales with viewport, caps at 30px */
+  font-size: clamp(18px, 3.2vw, 30px);
+  line-height: 1;
+  display: block;
+  /* FIX: reset any inherited color:transparent from text-gradient parents */
+  color: initial !important;
+  -webkit-text-fill-color: initial !important;
+  user-select: none;
+}
+
+/* ── Tile number ──────────────────────────────────────────────────────── */
+.tc-num {
+  position: relative;
+  z-index: 10;
+  font-size: 11px;
+  font-weight: 900;
+  margin-top: 3px;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  color: rgba(255,215,0,0.7);
+}
+
+/* ── Lock badge ───────────────────────────────────────────────────────── */
+.tc-lock {
+  position: absolute;
+  bottom: 3px;
+  right: 4px;
+  font-size: 8px;
+  opacity: 0.5;
+  z-index: 10;
+  line-height: 1;
+}
+
+/* ── Back face (revealed) ─────────────────────────────────────────────── */
+.tc-back {
+  transform: rotateY(180deg) translateZ(2px);
+  border: 2px solid transparent;
+}
+
+.tc-back--question {
+  border-color: rgba(96,165,250,0.7);
+  background: linear-gradient(145deg, #1e3a8a 0%, #2563eb 50%, #1d4ed8 100%);
+  box-shadow: 0 4px 16px rgba(59,130,246,0.3), inset 0 2px 4px rgba(255,255,255,0.1);
+}
+
+.tc-back--gift {
+  border-color: rgba(245,197,24,0.7);
+  background: linear-gradient(145deg, #78350f 0%, #d97706 50%, #92400e 100%);
+  box-shadow: 0 4px 16px rgba(245,197,24,0.3), inset 0 2px 4px rgba(255,255,255,0.1);
+}
+
+/* ── Back type label ──────────────────────────────────────────────────── */
+.tc-type-label {
+  position: relative;
+  z-index: 10;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+  line-height: 1;
+}
+
+.tc-back--question .tc-type-label { color: #bfdbfe; }
+.tc-back--gift     .tc-type-label { color: #fef3c7; }
+
+/* ── Reveal burst overlay ─────────────────────────────────────────────── */
+.tc-burst {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.tc-burst-pulse {
+  position: absolute;
+  inset: 0;
+  animation: pulse 0.8s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(245,197,24,0.55) 0%, rgba(245,197,24,0.15) 55%, transparent 70%);
+}
+
+.tc-burst-ring {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.18);
+  animation: ping 0.9s cubic-bezier(0,0,0.2,1) infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TILE GRID LAYOUT  (tg- prefix)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.tg-root {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: opacity 0.3s ease;
+}
+
+.tg-root--locked { opacity: 0.85; }
+
+.tg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.tg-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #facc15;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.tg-progress { margin-bottom: 14px; flex-shrink: 0; }
+
+.tg-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.tg-progress-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.tg-progress-count {
+  font-size: 10px;
+  font-weight: 900;
+  color: #facc15;
+}
+
+.tg-progress-track {
+  height: 10px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.tg-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #F5C518, #F97316, #EF4444);
+  transition: width 0.7s ease;
+  position: relative;
+}
+
+.tg-progress-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.28) 50%, transparent 100%);
+  animation: shimmerSweep 2s ease-in-out infinite;
+}
+
+.tg-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.tg-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (min-width: 1024px) {
+  .tg-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+.tg-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+.tg-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}

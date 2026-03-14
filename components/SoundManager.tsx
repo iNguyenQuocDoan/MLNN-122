@@ -109,8 +109,6 @@ export default function SoundManager({ gameStarted }: SoundManagerProps) {
             boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
             WebkitBackdropFilter: 'blur(20px)',
             backdropFilter: 'blur(20px)',
-            position: 'relative',
-            zIndex: 60,
           }}
         >
           {/* Header */}
