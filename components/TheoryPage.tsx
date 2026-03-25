@@ -884,6 +884,167 @@ export default function TheoryPage() {
               );
             })}
 
+            {/* AI Closure Section */}
+            <section className="relative mb-10 scroll-mt-24">
+              {/* Glow halo */}
+              <div className="pointer-events-none absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-r from-cyan-300/20 via-violet-300/20 to-fuchsia-300/20 blur-2xl" />
+
+              {/* Header */}
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-violet-600 text-xl text-white shadow-md">
+                  🤖
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-slate-800 md:text-2xl leading-tight">
+                    Hành trình tạo ra web này cùng AI
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5 font-medium">Powered by Claude Code · Next.js · Tailwind CSS</p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-violet-200 bg-white p-6 md:p-8 shadow-2xl shadow-violet-100/60 space-y-8">
+
+                {/* Intro */}
+                <p className="text-slate-600 leading-relaxed text-sm md:text-base">
+                  Toàn bộ web này — từ trang lý thuyết, hệ thống game tương tác, đến
+                  hiệu ứng hoạt hình — được xây dựng bằng cách <b>chat với AI</b>.
+                  Không cần thiết kế Figma trước, không cần viết boilerplate từ đầu.
+                  Chỉ cần biết mình muốn gì và biết cách hỏi.
+                </p>
+
+                {/* Timeline */}
+                <div className="space-y-4">
+                  <div className="text-xs font-black uppercase tracking-wider text-violet-600 mb-2 flex items-center gap-2">
+                    <div className="h-px flex-1 bg-violet-100" />
+                    Quy trình 4 bước
+                    <div className="h-px flex-1 bg-violet-100" />
+                  </div>
+
+                  {[
+                    {
+                      step: "01",
+                      phase: "Khởi tạo dự án",
+                      icon: "🚀",
+                      color: "from-blue-500 to-indigo-500",
+                      bg: "bg-blue-50 border-blue-200",
+                      badge: "text-blue-700 bg-blue-100",
+                      prompt: `"Tạo cho tôi một web app Next.js + Tailwind CSS cho môn kinh tế chính trị.
+Gồm 2 trang: trang lý thuyết hiển thị nội dung bài giảng đẹp như editorial,
+và trang game tương tác kiểu treasure map có 45 ô bí ẩn, 2-6 người chơi.
+Dùng TypeScript, không cần database, lưu state bằng React."`,
+                      result: "Khung app hoàn chỉnh trong ~5 phút",
+                    },
+                    {
+                      step: "02",
+                      phase: "Thiết kế giao diện",
+                      icon: "🎨",
+                      color: "from-fuchsia-500 to-rose-500",
+                      bg: "bg-fuchsia-50 border-fuchsia-200",
+                      badge: "text-fuchsia-700 bg-fuchsia-100",
+                      prompt: `"Trang game cần theme fantasy treasure map: nền tím đậm, card màu nâu vàng,
+border vàng đồng, hiệu ứng glow nhẹ. Card chưa mở hiện icon 📦, khi click
+thì lật 3D sang mặt sau hiện ❓ hoặc 🎁. Thêm sidebar trái có đường đua,
+danh sách người chơi, lịch sử hành động."`,
+                      result: "UI fantasy premium, đồng nhất toàn trang",
+                    },
+                    {
+                      step: "03",
+                      phase: "Logic game & dữ liệu",
+                      icon: "⚙️",
+                      color: "from-emerald-500 to-teal-500",
+                      bg: "bg-emerald-50 border-emerald-200",
+                      badge: "text-emerald-700 bg-emerald-100",
+                      prompt: `"Tạo 30 câu hỏi trắc nghiệm về giá trị thặng dư siêu ngạch
+và 15 phần quà ngẫu nhiên. Game luân phiên lượt chơi, trả lời đúng tiến
+thêm 3 bước, sai lùi 1. Có auto-save vào localStorage, có thể chơi tiếp
+khi reload trang. Thêm animation lật ô, confetti khi thắng."`,
+                      result: "Game logic hoàn chỉnh, có save/load",
+                    },
+                    {
+                      step: "04",
+                      phase: "Tinh chỉnh & sửa lỗi",
+                      icon: "🔧",
+                      color: "from-amber-500 to-orange-500",
+                      bg: "bg-amber-50 border-amber-200",
+                      badge: "text-amber-700 bg-amber-100",
+                      prompt: `"Nút âm thanh trong game khi ấn tạm dừng lại không được.
+Một số ô trong grid bị mất icon ở giữa card.
+Sửa lỗi và chạy build."`,
+                      result: "Bug fixed, build pass ✅",
+                    },
+                  ].map((item) => (
+                    <div key={item.step} className={`rounded-2xl border-2 overflow-hidden ${item.bg}`}>
+                      {/* Card header */}
+                      <div className={`bg-gradient-to-r ${item.color} px-4 py-3 flex items-center justify-between`}>
+                        <div className="flex items-center gap-2">
+                          <span className="text-white/60 text-xs font-black tracking-widest">BƯỚC {item.step}</span>
+                          <span className="text-white font-black text-sm">{item.phase}</span>
+                        </div>
+                        <span className="text-2xl">{item.icon}</span>
+                      </div>
+
+                      {/* Prompt block */}
+                      <div className="p-4 space-y-3">
+                        <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                          Prompt gửi cho AI
+                        </div>
+                        <div
+                          className="rounded-xl p-3 font-mono text-xs text-slate-700 leading-relaxed whitespace-pre-wrap border border-slate-200"
+                          style={{ background: "rgba(15,23,42,0.04)" }}
+                        >
+                          {item.prompt}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${item.badge}`}>
+                            ✓ {item.result}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Tips */}
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-3">
+                  <div className="text-xs font-black uppercase tracking-wider text-slate-600">
+                    💡 Mẹo để prompt AI hiệu quả hơn
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {[
+                      { icon: "🎯", tip: "Mô tả kết quả mong muốn, không mô tả cách làm" },
+                      { icon: "🖼️", tip: "Đính kèm screenshot khi báo lỗi giao diện" },
+                      { icon: "🔁", tip: "Chia nhỏ yêu cầu lớn thành nhiều bước rõ ràng" },
+                      { icon: "🧩", tip: "Cho AI biết tech stack đang dùng ngay từ đầu" },
+                      { icon: "✅", tip: "Xác nhận từng bước trước khi chuyển sang phần tiếp" },
+                      { icon: "🗂️", tip: "Yêu cầu AI giải thích logic khi cần học hỏi thêm" },
+                    ].map((t) => (
+                      <div key={t.tip} className="flex items-start gap-2 text-xs text-slate-600">
+                        <span className="shrink-0 text-base leading-none">{t.icon}</span>
+                        <span className="leading-relaxed">{t.tip}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Stats bar */}
+                <div className="grid grid-cols-3 gap-3 pt-2 border-t border-slate-100">
+                  {[
+                    { num: "~2h", label: "Tổng thời gian xây dựng", icon: "⏱️", color: "text-violet-700" },
+                    { num: "0", label: "Dòng code viết thủ công", icon: "✍️", color: "text-emerald-700" },
+                    { num: "100%", label: "Tạo bằng AI + prompt", icon: "🤖", color: "text-fuchsia-700" },
+                  ].map((s) => (
+                    <div key={s.label} className="text-center rounded-xl bg-slate-50 border border-slate-200 py-3 px-2">
+                      <div className={`text-xl font-black ${s.color}`}>{s.num}</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">{s.label}</div>
+                      <div className="text-base mt-1">{s.icon}</div>
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+            </section>
+
             {/* Final CTA */}
             <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 p-10 text-center text-white shadow-2xl">
               <div
